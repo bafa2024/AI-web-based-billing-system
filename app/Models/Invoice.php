@@ -18,7 +18,7 @@ class Invoice extends Model
         'invoice_date',
         'subtotal',
         'gst_amount',
-        'total',
+        'total_amount',
         'status',
         'notes',
     ];
@@ -30,7 +30,7 @@ class Invoice extends Model
         'invoice_date' => 'date',
         'subtotal' => 'decimal:2',
         'gst_amount' => 'decimal:2',
-        'total' => 'decimal:2',
+        'total_amount' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

@@ -18,7 +18,12 @@ class Client extends Model
         'name',
         'email',
         'phone',
+        'fax_number',
+        'mobile_number',
+        'web_address',
         'address',
+        'customer_code',
+        'active',
     ];
 
     /**
@@ -27,6 +32,7 @@ class Client extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'active' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

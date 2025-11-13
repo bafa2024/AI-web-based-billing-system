@@ -78,7 +78,7 @@
                             <div class="text-sm text-gray-900">{{ $invoice->invoice_date->format('M j, Y') }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-semibold text-gray-900">${{ number_format($invoice->total, 2) }}</div>
+                            <div class="text-sm font-semibold text-gray-900">${{ number_format($invoice->total_amount, 2) }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             @php

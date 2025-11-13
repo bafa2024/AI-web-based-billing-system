@@ -18,7 +18,7 @@ class ProfitLossExport implements FromArray, WithHeadings, WithStyles, WithColum
     public function array(): array
     {
         // Calculate revenue from invoices
-        $revenue = Invoice::sum('total');
+        $revenue = Invoice::sum('total_amount');
         
         // Calculate expenses
         $expenses = Expense::sum('amount');

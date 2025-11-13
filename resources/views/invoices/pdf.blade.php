@@ -274,7 +274,7 @@
             </tr>
             <tr class="total-row">
                 <td class="label">Total:</td>
-                <td class="amount">${{ number_format($invoice->total, 2) }}</td>
+                <td class="amount">${{ number_format($invoice->total_amount, 2) }}</td>
             </tr>
         </table>
     </div>

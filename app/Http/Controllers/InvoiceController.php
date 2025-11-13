@@ -76,7 +76,7 @@ class InvoiceController extends Controller
                 'invoice_date' => $validated['invoice_date'],
                 'subtotal' => $subtotal,
                 'gst_amount' => $gstAmount,
-                'total' => $total,
+                'total_amount' => $total,
                 'status' => 'draft',
                 'notes' => $validated['notes'],
             ]);
@@ -184,7 +184,7 @@ class InvoiceController extends Controller
                 'invoice_date' => $validated['invoice_date'],
                 'subtotal' => $subtotal,
                 'gst_amount' => $gstAmount,
-                'total' => $total,
+                'total_amount' => $total,
                 'status' => $validated['status'],
                 'notes' => $validated['notes'],
             ]);

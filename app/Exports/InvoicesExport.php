@@ -46,7 +46,7 @@ class InvoicesExport implements FromCollection, WithHeadings, WithMapping
             $invoice->invoice_date->format('Y-m-d'),
             number_format($invoice->subtotal, 2),
             number_format($invoice->gst_amount, 2),
-            number_format($invoice->total, 2),
+            number_format($invoice->total_amount, 2),
             ucfirst($invoice->status),
             $invoice->created_at->format('Y-m-d H:i:s'),
         ];

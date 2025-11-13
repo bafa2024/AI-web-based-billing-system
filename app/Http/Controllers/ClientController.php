@@ -10,10 +10,30 @@ class ClientController extends Controller
     /**
      * Display a listing of the clients.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $clients = Client::all();
-        return view('clients.index', compact('clients'));
+        $status = $request->get('status', 'all');
+        
+        $query = Client::query();
+        
+        if ($status === 'active') {
+            $query->where('active', true);
+        } elseif ($status === 'inactive') {
+            $query->where('active', false);
+        }
+        // 'all' shows everything, so no filter needed
+        
+        $clients = $query->get()->map(function ($client) {
+            // Calculate balance from unpaid invoices
+            $balance = \App\Models\Invoice::where('client_id', $client->id)
+                ->whereIn('status', ['sent', 'overdue'])
+                ->sum('total_amount');
+            
+            $client->balance = $balance;
+            return $client;
+        });
+        
+        return view('clients.index', compact('clients', 'status'));
     }
 
     /**
@@ -33,8 +53,15 @@ class ClientController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:clients,email|max:255',
             'phone' => 'nullable|string|max:20',
+            'fax_number' => 'nullable|string|max:20',
+            'mobile_number' => 'nullable|string|max:20',
+            'web_address' => 'nullable|url|max:255',
             'address' => 'nullable|string|max:500',
+            'customer_code' => 'nullable|string|max:255',
+            'active' => 'nullable',
         ]);
+
+        $validated['active'] = isset($validated['active']) ? ($validated['active'] == '1') : true;
 
         Client::create($validated);
 
@@ -61,8 +88,15 @@ class ClientController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:clients,email,' . $client->id . '|max:255',
             'phone' => 'nullable|string|max:20',
+            'fax_number' => 'nullable|string|max:20',
+            'mobile_number' => 'nullable|string|max:20',
+            'web_address' => 'nullable|url|max:255',
             'address' => 'nullable|string|max:500',
+            'customer_code' => 'nullable|string|max:255',
+            'active' => 'nullable',
         ]);
+
+        $validated['active'] = isset($validated['active']) ? ($validated['active'] == '1') : ($client->active ?? true);
 
         $client->update($validated);
 

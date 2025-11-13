@@ -93,14 +93,24 @@
                         <!-- Sample Product Row -->
                         <tr class="product-row">
                             <td class="px-6 py-4">
-                                <select name="products[]" class="product-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" required>
-                                    <option value="">Select product...</option>
-                                    @foreach($products as $product)
-                                        <option value="{{ $product->id }}" data-price="{{ $product->price }}">
-                                            {{ $product->name }} - ${{ number_format($product->price, 2) }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                    <select name="products[]" class="product-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 mb-2" required>
+                                        <option value="">Select product...</option>
+                                        @foreach($products as $product)
+                                            <option value="{{ $product->id }}" data-price="{{ $product->price }}">
+                                                {{ $product->name }} - ${{ number_format($product->price, 2) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <div class="serial-numbers-display mb-2 text-sm text-gray-600"></div>
+                                    <button type="button" class="open-serial-dialog bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center space-x-1">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                        <span>Add Serial Numbers</span>
+                                    </button>
+                                    <input type="hidden" name="serial_numbers[]" class="serial-numbers-input">
+                                </div>
                             </td>
                             <td class="px-6 py-4">
                                 <span class="product-price text-sm font-medium text-gray-900">$0.00</span>
@@ -117,15 +127,6 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                     </svg>
                                 </button>
-                            </td>
-                        </tr>
-                        <!-- Serial Numbers Row -->
-                        <tr class="serial-row bg-gray-50">
-                            <td colspan="5" class="px-6 py-3">
-                                <div class="flex items-center space-x-4">
-                                    <label class="text-sm font-medium text-gray-700 min-w-0 flex-shrink-0">Serial Numbers:</label>
-                                    <input type="text" name="serial_numbers[]" placeholder="Enter serial numbers (comma separated)" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm">
-                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -254,9 +255,19 @@
             newRow.className = 'product-row';
             newRow.innerHTML = `
                 <td class="px-6 py-4">
-                    <select name="products[]" class="product-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" required>
-                        ${productOptions}
-                    </select>
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                        <select name="products[]" class="product-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 mb-2" required>
+                            ${productOptions}
+                        </select>
+                        <div class="serial-numbers-display mb-2 text-sm text-gray-600"></div>
+                        <button type="button" class="open-serial-dialog bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center space-x-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            <span>Add Serial Numbers</span>
+                        </button>
+                        <input type="hidden" name="serial_numbers[]" class="serial-numbers-input">
+                    </div>
                 </td>
                 <td class="px-6 py-4">
                     <span class="product-price text-sm font-medium text-gray-900">$0.00</span>
@@ -276,39 +287,129 @@
                 </td>
             `;
             
-            const serialRow = document.createElement('tr');
-            serialRow.className = 'serial-row bg-gray-50';
-            serialRow.innerHTML = `
-                <td colspan="5" class="px-6 py-3">
-                    <div class="flex items-center space-x-4">
-                        <label class="text-sm font-medium text-gray-700 min-w-0 flex-shrink-0">Serial Numbers:</label>
-                        <input type="text" name="serial_numbers[]" placeholder="Enter serial numbers (comma separated)" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm">
-                    </div>
-                </td>
-            `;
-            
             productsTable.appendChild(newRow);
-            productsTable.appendChild(serialRow);
             
             // Add calculation listeners to new row
             addCalculationListeners(newRow);
+            setupSerialDialog(newRow);
         });
         
         // Remove product functionality
         productsTable.addEventListener('click', function(e) {
             if (e.target.closest('.remove-product')) {
                 const productRow = e.target.closest('.product-row');
-                const serialRow = productRow.nextElementSibling;
-                if (serialRow && serialRow.classList.contains('serial-row')) {
-                    serialRow.remove();
-                }
                 productRow.remove();
                 calculateTotals();
             }
         });
+
+        // Serial Number Dialog Setup
+        function setupSerialDialog(row) {
+            const openBtn = row.querySelector('.open-serial-dialog');
+            const serialInput = row.querySelector('.serial-numbers-input');
+            const serialDisplay = row.querySelector('.serial-numbers-display');
+            let serialNumbers = [];
+
+            openBtn.addEventListener('click', function() {
+                const modal = document.getElementById('serialNumberModal');
+                const serialInputField = document.getElementById('serial_number_input');
+                const serialList = document.getElementById('serial_numbers_list');
+                const addSerialBtn = document.getElementById('add_serial_btn');
+                const saveSerialBtn = document.getElementById('save_serial_btn');
+                
+                // Reset modal
+                serialInputField.value = '';
+                serialList.innerHTML = '';
+                serialNumbers = serialInput.value ? serialInput.value.split(',').map(s => s.trim()).filter(s => s) : [];
+                
+                // Display existing serial numbers
+                serialNumbers.forEach(serial => {
+                    const item = document.createElement('div');
+                    item.className = 'flex items-center justify-between bg-gray-100 p-2 rounded mb-2';
+                    item.innerHTML = `
+                        <span>${serial}</span>
+                        <button type="button" class="remove-serial text-red-600 hover:text-red-800" data-serial="${serial}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    `;
+                    serialList.appendChild(item);
+                });
+
+                // Show modal
+                modal.style.display = 'flex';
+
+                // Add serial number
+                addSerialBtn.onclick = function() {
+                    const value = serialInputField.value.trim();
+                    if (value && !serialNumbers.includes(value)) {
+                        serialNumbers.push(value);
+                        const item = document.createElement('div');
+                        item.className = 'flex items-center justify-between bg-gray-100 p-2 rounded mb-2';
+                        item.innerHTML = `
+                            <span>${value}</span>
+                            <button type="button" class="remove-serial text-red-600 hover:text-red-800" data-serial="${value}">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        `;
+                        serialList.appendChild(item);
+                        serialInputField.value = '';
+                    }
+                };
+
+                // Remove serial number
+                serialList.addEventListener('click', function(e) {
+                    if (e.target.closest('.remove-serial')) {
+                        const serial = e.target.closest('.remove-serial').dataset.serial;
+                        serialNumbers = serialNumbers.filter(s => s !== serial);
+                        e.target.closest('div').remove();
+                    }
+                });
+
+                // Save serial numbers
+                saveSerialBtn.onclick = function() {
+                    serialInput.value = serialNumbers.join(',');
+                    if (serialNumbers.length > 0) {
+                        serialDisplay.innerHTML = '<strong>Serial Numbers:</strong> ' + serialNumbers.map(s => `<span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-1">${s}</span>`).join('');
+                    } else {
+                        serialDisplay.innerHTML = '';
+                    }
+                    modal.style.display = 'none';
+                };
+
+                // Close modal
+                document.getElementById('close_serial_modal').onclick = function() {
+                    modal.style.display = 'none';
+                };
+            });
+        }
+
+        // Setup serial dialog for initial row
+        setupSerialDialog(document.querySelector('.product-row'));
         
         // Initial calculation
         calculateTotals();
     });
 </script>
+
+<!-- Serial Number Modal -->
+<div id="serialNumberModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Enter Serial Number</h3>
+        <div class="mb-4">
+            <input type="text" id="serial_number_input" placeholder="Enter serial number" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+        </div>
+        <div class="mb-4">
+            <button type="button" id="add_serial_btn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">Add</button>
+        </div>
+        <div id="serial_numbers_list" class="mb-4 max-h-48 overflow-y-auto"></div>
+        <div class="flex justify-end space-x-2">
+            <button type="button" id="close_serial_modal" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
+            <button type="button" id="save_serial_btn" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg">Save</button>
+        </div>
+    </div>
+</div>
 @endsection

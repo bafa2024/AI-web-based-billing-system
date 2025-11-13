@@ -190,7 +190,7 @@
                         <div class="border-t border-gray-200 pt-3">
                             <div class="flex justify-between items-center">
                                 <span class="text-lg font-semibold text-gray-900">Total:</span>
-                                <span class="text-xl font-bold text-red-600">${{ number_format($invoice->total, 2) }}</span>
+                                <span class="text-xl font-bold text-red-600">${{ number_format($invoice->total_amount, 2) }}</span>
                             </div>
                         </div>
                     </div>

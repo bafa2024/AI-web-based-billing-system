@@ -29,7 +29,7 @@ class ReportController extends Controller
             // Get revenue for this month
             $monthlyRevenue = Invoice::whereMonth('created_at', $i)
                                    ->whereYear('created_at', now()->year)
-                                   ->sum('total');
+                                   ->sum('total_amount');
             
             // Get expenses for this month
             $monthlyExpenses = Expense::whereMonth('expense_date', $i)
@@ -77,7 +77,7 @@ class ReportController extends Controller
     public function exportProfitLossPdf()
     {
         // Calculate financial data
-        $revenue = Invoice::sum('total');
+        $revenue = Invoice::sum('total_amount');
         $expenses = Expense::sum('amount');
         $netProfit = $revenue - $expenses;
 
@@ -98,7 +98,7 @@ class ReportController extends Controller
     public function emailProfitLossReport()
     {
         // Calculate financial data
-        $revenue = Invoice::sum('total');
+        $revenue = Invoice::sum('total_amount');
         $expenses = Expense::sum('amount');
         $netProfit = $revenue - $expenses;
 

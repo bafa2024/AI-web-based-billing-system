@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+    <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Invoice Management System')</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         * {
@@ -120,7 +121,7 @@
         /* Content Area */
         .content {
             flex: 1;
-            padding: 30px;
+            padding: 30px 0;
             background-color: #f8f9fa;
         }
 
@@ -139,7 +140,7 @@
             }
             
             .content {
-                padding: 20px;
+                padding: 20px 0;
             }
         }
 
@@ -159,7 +160,7 @@
             }
         }
     </style>
-</head>
+    </head>
 <body>
     <div class="container">
         <!-- Sidebar -->
@@ -169,6 +170,7 @@
                 <li><a href="/dashboard" class="{{ request()->is('dashboard') ? 'active' : '' }}">Dashboard</a></li>
                 <li><a href="/clients" class="{{ request()->is('clients*') ? 'active' : '' }}">Clients</a></li>
                 <li><a href="/products" class="{{ request()->is('products*') ? 'active' : '' }}">Products</a></li>
+                <li><a href="/quotes" class="{{ request()->is('quotes*') ? 'active' : '' }}">Quotes</a></li>
                 <li><a href="/invoices" class="{{ request()->is('invoices*') ? 'active' : '' }}">Invoices</a></li>
                 <li><a href="/expenses" class="{{ request()->is('expenses*') ? 'active' : '' }}">Expenses</a></li>
                 <li><a href="/reports" class="{{ request()->is('reports*') ? 'active' : '' }}">Reports</a></li>
@@ -181,16 +183,23 @@
             <header class="topbar">
                 <h1>@yield('page-title', 'Dashboard')</h1>
                 <div class="user-info">
-                    <span>Welcome, User</span>
-                    <div class="profile-placeholder">U</div>
-                </div>
-            </header>
+                    <span>Welcome, {{ Auth::user()->name }}</span>
+                    <div class="profile-placeholder">{{ substr(Auth::user()->name, 0, 1) }}</div>
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium">
+                            Logout
+                        </button>
+                    </form>
+                    </div>
+                </header>
 
             <!-- Page Content -->
             <main class="content">
                 @yield('content')
             </main>
         </div>
-    </div>
-</body>
+        </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
 </html>

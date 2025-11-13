@@ -193,7 +193,7 @@
         
         <div class="amount-details total-amount">
             <span class="amount-label">Total Amount:</span>
-            <span class="amount-value">${{ number_format($invoice->total, 2) }}</span>
+            <span class="amount-value">${{ number_format($invoice->total_amount, 2) }}</span>
         </div>
     </div>
 
